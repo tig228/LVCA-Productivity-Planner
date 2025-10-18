@@ -92,6 +92,43 @@ height: 300px;
     display: flex; 
 }
 
+#event{
+    position: absolute;
+    
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; 
+    display: none;
+}
+#event.show{
+    display: flex; 
+}
+#task{
+    position: absolute;
+    
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; 
+    display: none;
+}
+#task.show{
+    display: flex; 
+}
+#course{
+    position: absolute;
+    
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; 
+    display: none;
+}
+#course.show{
+    display: flex; 
+}
+
 :root{
     --bg-color: rgb(207,181,128); 
     --accent-color: rgb(202,124,76);

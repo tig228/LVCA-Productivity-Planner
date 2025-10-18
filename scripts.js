@@ -3,7 +3,7 @@
 let startButton = document.getElementById("start");  // provided are all the button variables 
 let nextButton = document.getElementById("next"); 
 let addCourseButton = document.getElementById("course");
-let toDoButton = document.getElementById("toDo");
+let eventButton = document.getElementById("event");
 let taskButton = document.getElementById("task"); 
 let microphone = document.getElementById("microhphone"); 
 let finishedButton = document.getElementById("submit"); 
@@ -15,6 +15,9 @@ const addModal = document.getElementById("adding");
 const loginModal = document.getElementById("login"); 
 const suggestionModal = document.getElementById("suggestions"); 
 const adviceModal = document.getElementById("advice"); 
+const eventModal = document.getElementById("event"); 
+const taskModal = document.getElementById("task"); 
+const courseModal = document.getElementById("course"); 
 
 
 startButton.addEventListener("click", (e) => {
