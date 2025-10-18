@@ -99,3 +99,91 @@ height: 300px;
     --main-color: rgb(116,148,140);
     --accent2-color: rgb(134,78,62);   
 }
+
+.calendar {
+  width: 100%;
+  max-width: 920px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+  overflow: hidden;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.month-title { display: flex; flex-direction: column; }
+.month-title h2 { margin: 0; font-size: 1.25rem; letter-spacing: 0.2px; }
+.month-title small { color: var(--muted);}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 8px;
+  padding: 6px 4px;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(2,6,23,0.5); }
+.day.outside { opacity: 0.35; }
+
+.date-num { font-weight: 700; font-size: 0.95rem; }
+
+.events { display: flex; flex-direction: column; gap: 6px; max-height: 58px; overflow: auto; }
+.event {
+  background: linear-gradient(90deg, rgba(124,58,237,0.12), rgba(79,70,229,0.06));
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(124,58,237,0.08);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Today highlight */
+.day.today {
+  outline: 2px solid rgba(124,58,237,0.12);
+  background: linear-gradient(180deg, var(--today), rgba(255,255,255,0.01));
+}
+
+.modal h3 { margin: 0 0 8px 0; }
+.modal form { display: flex; flex-direction: column; gap: 8px; }
+
+input[type="text"], textarea, input[type="time"] {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 10px;
+  color: var(--text);
+  border-radius: 8px;
+}
+
+input[type="text"], textarea, input[type="date"] {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 10px;
+  color: var(--text);
+  border-radius: 8px;
+}
+
+.actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.04); }
+
+@media (max-width:640px) {
+  .day { min-height: 72px; }
+  .month-title h2 { font-size: 1rem; }
+}

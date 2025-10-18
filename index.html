@@ -5,6 +5,88 @@
   <link rel="stylesheet" href = "styles.css"/>
 </head>
   <body>
+    <div class = "calendar-container">
+        <div class = "month-title">
+            <h2>Month Year</h2>
+            <small id = "rangeLabel">Range</small>
+        </div>
+
+        <div class = "nav">
+            <button id = "previousMonth">◀</button>
+            <button id = "nextMonth">▶</button>
+            <button id = "todayMonth">Today</button>
+        </div>
+    </div>
+
+    <div class="weekdays" aria-hidden="true">
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+
+     <section class="days" id="daysGrid" aria-live="polite"></section>
+  </main>
+
+     <div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Events for <span id="modalDate"></span></h3>
+      <form id="eventForm">
+        <input type="text" id="eventTitle" placeholder="Event title (required)" required />
+        <label for="eventDate">Date:</label>
+        <input type="date" id="eventDate" required>
+        <input type="time" id="eventTime" />
+        <textarea id="eventNote" rows="3" placeholder="Details (optional)"></textarea>
+        <div class="actions">
+          <button type="button" class="btn secondary" id="deleteAllBtn">Delete all</button>
+          <button type="button" class="btn secondary" id="closeBtn">Close</button>
+          <button type="submit" class="btn secondary">Save</button>
+        </div>
+      </form>
+      <div id="existingEvents" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+      <div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Task: <span id="modalDate"></span></h3>
+      <form id="eventForm">
+        <input type="text" id="eventTitle" placeholder="Event title (required)" required />
+        <label for="eventDate">Date:</label>
+        <input type="date" id="eventDate" required>
+        <input type="time" id="eventTime" />
+        <textarea id="eventNote" rows="3" placeholder="Details (optional)"></textarea>
+        <div class="actions">
+          <button type="button" class="btn secondary" id="deleteAllBtn">Delete all</button>
+          <button type="button" class="btn secondary" id="closeBtn">Close</button>
+          <button type="submit" class="btn secondary">Save</button>
+        </div>
+      </form>
+      <div id="existingEvents" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+        <div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Course: <span id="modalDate"></span></h3>
+      <form id="eventForm">
+        <input type="text" id="eventTitle" placeholder="Event title (required)" required />
+        <label for="eventDate">Date:</label>
+        <input type="date" id="eventDate" required>
+        <input type="time" id="eventTime" />
+        <textarea id="eventNote" rows="3" placeholder="Details (optional)"></textarea>
+        <div class="actions">
+          <button type="button" class="btn secondary" id="deleteAllBtn">Delete all</button>
+          <button type="button" class="btn secondary" id="closeBtn">Close</button>
+          <button type="submit" class="btn secondary">Save</button>
+        </div>
+      </form>
+      <div id="existingEvents" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+   
+
+
+
+
     <div class = "modal" id = "welcome">
       <h1>Welcome❤️</h1>
       <button id = "start">Let's Get Started!</button> 

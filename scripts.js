@@ -1,5 +1,4 @@
-// Milestone 1: Create basic HTML and CSS 
-// Milestone 2: As buttons are clicked go to the next modal by 3:00 
+//Milestone #1 Create an action for each button 
 
 let startButton = document.getElementById("start");  // provided are all the button variables 
 let nextButton = document.getElementById("next"); 
@@ -46,7 +45,7 @@ yesButton.addEventListener("click", (e) => { // the yes button will take you to 
 noButton.addEventListener("click", (e) => { // the no button will take you to the calendar 
     e.preventDefault(); // this will make sure the website does not refresh 
     suggestionModal.style.display = "none"; 
-    
+    suggestionModal.classList.add("show");
 
 })
 
