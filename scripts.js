@@ -1,4 +1,12 @@
-// ===== ORIGINAL MODAL LOGIC =====
+//Milestone #5 comment through the code and understand each line
+// Miilestone #6 Fix the CSS aspects XX
+// Milestone #7 If they click on a calendar a info modual shows up of the events and tasks that they need to do 
+
+
+
+
+
+
 const startButton = document.getElementById("start");
 const nextButton = document.getElementById("next");
 const addCourseButton = document.getElementById("courses");
@@ -7,6 +15,7 @@ const taskButton = document.getElementById("tasks");
 const finishedButton = document.getElementById("submit");
 const yesButton = document.getElementById("yes");
 const noButton = document.getElementById("no");
+const calendarButton = document.getElementById("seeCal"); 
 
 const startModal = document.getElementById("welcome");
 const addModal = document.getElementById("adding");
@@ -66,6 +75,8 @@ taskButton.addEventListener("click", (e) => {
   addModal.style.display = "none";
   taskModal.classList.add("show");
 });
+
+
 
 // ===== SIMPLE CLOSES =====
 document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseCloseBtn").forEach(btn => {
@@ -223,4 +234,11 @@ document.getElementById('courseForm').addEventListener('submit', (e) => {
   addToCalendarStorage(date, title, '', note);
   document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
   calendarContainer.style.display = 'block';
+});
+
+calendarButton.addEventListener("click", (e) => {
+  e.preventDefault();
+  startModal.style.display = "none";
+  calendarContainer.style.display = "block";
+  window.renderCalendar(); // Call the global reference
 });

@@ -61,22 +61,45 @@ button:hover {
   margin-top: 10px;
 }
 
-/* ===== CALENDAR STYLES ===== */
+/* === PERFECT ALIGNMENT FIX === */
 .calendar {
   width: 100%;
-  max-width: 920px;
+  max-width: 1500px;
   margin: 40px auto;
   background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
   border-radius: 12px;
-  padding: 18px;
   box-shadow: 0 6px 30px rgba(0,0,0,0.4);
+   /* ensures header & grid edges line up exactly */
 }
 
+/* Header and nav now flush with calendar edges */
 .cal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Weekday bar and grid use same inner padding */
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 10px 24px 4px 24px; /* matches header padding */
+  box-sizing: border-box;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  padding: 0 24px 24px 24px; /* same horizontal padding */
+  box-sizing: border-box;
 }
 
 .month-title h2 { margin: 0; font-size: 1.25rem; }
@@ -130,8 +153,27 @@ button:hover {
 }
 
 .event {
+  
   background: rgba(255,255,255,0.4);
   border-radius: 8px;
   padding: 4px;
   font-size: 0.8rem;
+}
+.modal h3 { margin: 0 0 8px 0; }
+.modal form { display: flex; flex-direction: column; gap: 8px; }
+
+input[type="text"], textarea, input[type="time"], input[type="date"] {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 10px;
+  color: var(--text);
+  border-radius: 8px;
+}
+
+.actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.04); }
+
+@media (max-width:640px) {
+  .day { min-height: 72px; }
+  .month-title h2 { font-size: 1rem; }
 }
