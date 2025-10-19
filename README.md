@@ -1,4 +1,4 @@
-# 🎙️ AI Planner Assistant
+# 🎙️ SyncFlow
 
 An AI-powered voice-based planner that lets you speak or type tasks and automatically schedules them into your calendar using **AWS Bedrock (Claude 3)** and **Google Calendar**.
 
