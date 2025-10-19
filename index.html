@@ -19,16 +19,13 @@
     <button id="start">Let's Get Started!</button>
   </div>
 
-  <div class="modal" id="login">
-    <h2>Here we need to connect the Google Login</h2>
-    <button id="next">Next modal</button>
-  </div>
-
+ 
   <div class="modal" id="adding">
     <div class="paragraph">
       <p>ok! we have all your courses, is there anything else you would like to add?</p>
     </div>
     <button id="microphone">🎙️</button>
+    <p id="transcript" style="margin-top:10px;font-style:italic;color:#444;"></p>
     <button id="courses">Add Course +</button>
     <button id="events">Add Event +</button>
     <button id="tasks">Add Task +</button>
@@ -44,6 +41,43 @@
   <div class="modal" id="advice">
     <h3>Advice</h3>
     <p>Here, users will choose what tasks or classes are hardest for them.</p>
+
+    <!-- New: Ask whether a course/task is usually hard, how it makes the user feel afterwards, and optionally a due date -->
+    <form id="adviceForm" style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+      <label for="adviceName">Course or Task name:</label>
+      <input type="text" id="adviceName" placeholder="e.g. Calculus I or Homework A" required />
+
+      <div>
+        <div>Is this usually a hard course/task?</div>
+        <label style="margin-right:12px;">
+          <input type="radio" name="adviceHard" value="yes" /> Yes
+        </label>
+        <label>
+          <input type="radio" name="adviceHard" value="no" checked /> No
+        </label>
+      </div>
+
+      <div>
+        <div>How does this course make you feel afterwards?</div>
+        <label style="margin-right:12px;">
+          <input type="radio" name="adviceFeeling" value="tired" checked /> Tired
+        </label>
+        <label>
+          <input type="radio" name="adviceFeeling" value="energized" /> Energized
+        </label>
+      </div>
+
+      <div>
+        <label for="adviceDueDate">Due date (optional):</label>
+        <input type="date" id="adviceDueDate" />
+        <small style="color: #444;">If you provide a due date we'll auto-schedule a prep task 2 days before.</small>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn secondary" id="adviceSkipBtn">Skip</button>
+        <button type="submit" class="btn" id="adviceSaveBtn">Save</button>
+      </div>
+    </form>
   </div>
 
   <!-- ====== Event / Task / Course Modals ====== -->

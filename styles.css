@@ -49,7 +49,14 @@ button:hover {
 }
 
 #welcome { display: flex; position: absolute; }
-#login, #adding, #suggestions, #advice, #event, #task, #course, #eventDetailModal {
+ #adding, #suggestions,  #event, #task, #course, #eventDetailModal {
+  position: absolute;
+  gap: 10px;
+}
+#advice{
+  transform: translate(50%, 10%);
+  width: 700px;
+  height: 500px; 
   position: absolute;
   gap: 10px;
 }

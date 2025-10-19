@@ -15,6 +15,7 @@ const addModal = document.getElementById("adding");
 const loginModal = document.getElementById("login");
 const suggestionModal = document.getElementById("suggestions");
 const adviceModal = document.getElementById("advice");
+const adviceForm = document.getElementById("adviceForm");
 const eventModal = document.getElementById("event");
 const taskModal = document.getElementById("task");
 const courseModal = document.getElementById("course");
@@ -24,12 +25,6 @@ const calendarContainer = document.getElementById("calendarContainer");
 startButton.addEventListener("click", (e) => {
   e.preventDefault();
   startModal.style.display = "none";
-  loginModal.classList.add("show");
-});
-
-nextButton.addEventListener("click", (e) => {
-  e.preventDefault();
-  loginModal.style.display = "none";
   addModal.classList.add("show");
 });
 
@@ -83,6 +78,36 @@ function addToCalendarStorage(dateStr, title, time, note) {
   const STORAGE_KEY = "calendar_events_v1";
   const events = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
   const key = dateStr;
+
+  // If no time specified, consult advice map to suggest a time:
+  // - If the saved advice marks the course/task as hard and makes you tired -> suggest 18:00 (towards 6)
+  // - If marked as easy (not hard) -> suggest early day 08:00
+  // Matching strategy: try exact match of title to advice map keys (case-insensitive),
+  // or check if any advice key is included in title.
+  if (!time || time === "") {
+    const DIFFICULTY_KEY = 'difficulty_map_v1';
+    const map = JSON.parse(localStorage.getItem(DIFFICULTY_KEY) || '{}');
+    const titleLC = (title || "").toLowerCase();
+    let matchedEntry = null;
+    for (const k of Object.keys(map)) {
+      const kLC = k.toLowerCase();
+      if (titleLC === kLC || titleLC.includes(kLC) || kLC.includes(titleLC)) {
+        matchedEntry = map[k];
+        break;
+      }
+    }
+    if (matchedEntry) {
+      const hard = !!matchedEntry.hard;
+      const feeling = matchedEntry.feeling || 'tired';
+      if (hard && feeling === 'tired') time = '18:00';
+      else if (hard && feeling === 'energized') time = '16:00';
+      else if (!hard) time = '08:00';
+      // otherwise leave time as empty (user can set)
+      // Also, if the advice entry contains a dueDate and no explicit date was provided,
+      // we could derive scheduling from that; but addToCalendarStorage assumes dateStr is the target date.
+    }
+  }
+
   events[key] = events[key] || [];
   events[key].push({ title, time, note });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
@@ -441,7 +466,7 @@ editEventBtn.addEventListener('click', () => {
 });
 
 /* === Header Delete Button: delete ALL events === */
-deleteCalHeader.addEventListener('click', () => {
+deleteCalHeader?.addEventListener('click', () => {
   if (confirm('Are you sure you want to delete all events?')) {
     localStorage.removeItem('calendar_events_v1');
     if (window.renderCalendar) window.renderCalendar();
@@ -449,11 +474,89 @@ deleteCalHeader.addEventListener('click', () => {
 });
 
 /* === Header Edit Button: toggle edit mode === */
-editCalHeader.addEventListener('click', () => {
+editCalHeader?.addEventListener('click', () => {
   alert('Click on any event to view or edit its details!');
 });
 
 /* === Header Add Button: open add modal === */
-addCalHeader.addEventListener('click', () => {
+addCalHeader?.addEventListener('click', () => {
   addModal.classList.add('show');
 });
+
+/* === Advice Modal: save whether a course/task is usually hard and how it makes the user feel afterwards === */
+const DIFFICULTY_KEY = 'difficulty_map_v1';
+
+if (adviceForm) {
+  adviceForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('adviceName');
+    const hardSelected = document.querySelector('input[name="adviceHard"]:checked');
+    const feelingSelected = document.querySelector('input[name="adviceFeeling"]:checked');
+    const dueDateInput = document.getElementById('adviceDueDate');
+    const name = nameInput?.value.trim();
+    const hard = hardSelected?.value === 'yes';
+    const feeling = feelingSelected?.value || 'tired';
+    const dueDate = dueDateInput?.value || '';
+
+    if (!name) {
+      alert('Please enter the course or task name.');
+      return;
+    }
+
+    const map = JSON.parse(localStorage.getItem(DIFFICULTY_KEY) || '{}');
+    map[name] = { hard, feeling, dueDate };
+    localStorage.setItem(DIFFICULTY_KEY, JSON.stringify(map));
+
+    // If a due date was provided, auto-schedule a prep task 2 days before.
+    if (dueDate) {
+      try {
+        const due = new Date(dueDate + "T00:00:00");
+        const prep = new Date(due);
+        prep.setDate(prep.getDate() - 2);
+        // format yyyy-mm-dd
+        const yyyy = prep.getFullYear();
+        const mm = String(prep.getMonth() + 1).padStart(2, '0');
+        const dd = String(prep.getDate()).padStart(2, '0');
+        const prepDateKey = `${yyyy}-${mm}-${dd}`;
+
+        // Determine time based on difficulty + feeling
+        let prepTime = '';
+        if (hard && feeling === 'tired') prepTime = '18:00';
+        else if (hard && feeling === 'energized') prepTime = '16:00';
+        else if (!hard) prepTime = '08:00';
+
+        const prepTitle = `Prep: ${name}`;
+        const prepNote = `Auto-scheduled from advice (due ${dueDate})`;
+        addToCalendarStorage(prepDateKey, prepTitle, prepTime, prepNote);
+      } catch (err) {
+        console.warn('Failed to auto-schedule prep task:', err);
+      }
+    }
+
+    alert(`Saved: "${name}" marked as ${hard ? 'usually hard' : 'not usually hard'} and feeling "${feeling}".`);
+    document.querySelectorAll(".modal").forEach(m => m.classList.remove("show"));
+    calendarContainer.style.display = "block";
+  });
+
+  // Skip button: just close the modal and show calendar
+  const adviceSkipBtn = document.getElementById('adviceSkipBtn');
+  adviceSkipBtn?.addEventListener('click', () => {
+    document.querySelectorAll(".modal").forEach(m => m.classList.remove("show"));
+    calendarContainer.style.display = "block";
+  });
+}
+
+// Optionally you can expose helper functions to read difficulty map
+function getDifficultyMap() {
+  return JSON.parse(localStorage.getItem(DIFFICULTY_KEY) || '{}');
+}
+function isUsuallyHard(name) {
+  const map = getDifficultyMap();
+  const entry = map[name];
+  return !!entry && !!entry.hard;
+}
+function getFeelingFor(name) {
+  const map = getDifficultyMap();
+  const entry = map[name];
+  return entry ? entry.feeling : undefined;
+}
