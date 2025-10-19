@@ -5,8 +5,6 @@
 
 
 
-
-
 const startButton = document.getElementById("start");
 const nextButton = document.getElementById("next");
 const addCourseButton = document.getElementById("courses");
@@ -16,6 +14,9 @@ const finishedButton = document.getElementById("submit");
 const yesButton = document.getElementById("yes");
 const noButton = document.getElementById("no");
 const calendarButton = document.getElementById("seeCal"); 
+const editCalHeader = document.getElementById("editCal-header"); 
+const deleteCalHeader = document.getElementById("deleteCalHeader");
+const addCalHeader = document.getElementById("addCal-header"); 
 
 const startModal = document.getElementById("welcome");
 const addModal = document.getElementById("adding");
@@ -27,50 +28,50 @@ const taskModal = document.getElementById("task");
 const courseModal = document.getElementById("course");
 const calendarContainer = document.getElementById("calendarContainer");
 
-startButton.addEventListener("click", (e) => {
+startButton.addEventListener("click", (e) => { // this takes you to the login page 
   e.preventDefault();
   startModal.style.display = "none";
   loginModal.classList.add("show");
 });
 
-nextButton.addEventListener("click", (e) => {
-  e.preventDefault();
+nextButton.addEventListener("click", (e) => {  // this takes you to the add events page
+  e.preventDefault();  
   loginModal.style.display = "none";
   addModal.classList.add("show");
 });
 
-finishedButton.addEventListener("click", (e) => {
+finishedButton.addEventListener("click", (e) => {  // once you click this button it will take you to a prompt where you can ask for suggestions 
   e.preventDefault();
   addModal.style.display = "none";
   suggestionModal.classList.add("show");
 });
 
-yesButton.addEventListener("click", (e) => {
+yesButton.addEventListener("click", (e) => {  // if yes there will be many questions as to where you events should go 
   e.preventDefault();
   suggestionModal.style.display = "none";
   adviceModal.classList.add("show");
 });
 
-noButton.addEventListener("click", (e) => {
+noButton.addEventListener("click", (e) => {  // no will take you immediately to the finished calenday 
   e.preventDefault();
   suggestionModal.style.display = "none";
   calendarContainer.style.display = "block";
 });
 
 // ===== SHOW EVENT / TASK / COURSE MODALS =====
-addCourseButton.addEventListener("click", (e) => {
+addCourseButton.addEventListener("click", (e) => {   // will take you to the addCourses
   e.preventDefault();
   addModal.style.display = "none";
   courseModal.classList.add("show");
 });
 
-eventButton.addEventListener("click", (e) => {
+eventButton.addEventListener("click", (e) => {   // will take you to the addEvents 
   e.preventDefault();
   addModal.style.display = "none";
   eventModal.classList.add("show");
 });
 
-taskButton.addEventListener("click", (e) => {
+taskButton.addEventListener("click", (e) => {  // will take you to the add Tasks 
   e.preventDefault();
   addModal.style.display = "none";
   taskModal.classList.add("show");
@@ -79,7 +80,7 @@ taskButton.addEventListener("click", (e) => {
 
 
 // ===== SIMPLE CLOSES =====
-document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseCloseBtn").forEach(btn => {
+document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseCloseBtn").forEach(btn => {  // this hides the calendar 
   btn.addEventListener("click", () => {
     document.querySelectorAll(".modal").forEach(modal => modal.classList.remove("show"));
     calendarContainer.style.display = "block";
@@ -88,18 +89,18 @@ document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseClos
 
 // ====== CALENDAR LOGIC (unchanged, wrapped to avoid interference) ======
 (function () {
-  const daysGrid = document.getElementById('daysGrid');
+  const daysGrid = document.getElementById('daysGrid');  // this creates the buttons labels and grids for the calendar 
   const monthLabel = document.getElementById('monthLabel');
   const rangeLabel = document.getElementById('rangeLabel');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const todayBtn = document.getElementById('todayBtn');
 
-  let viewDate = new Date();
+  let viewDate = new Date();  // this is 
   const today = new Date();
   const STORAGE_KEY = 'calendar_events_v1';
 
-  const loadEvents = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  const loadEvents = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');  // this gets storage and loads the events 
   const saveEvents = (obj) => localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
   const formatMonthYear = (d) => d.toLocaleString(undefined, { month: 'long', year: 'numeric' });
   const dateKey = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -128,6 +129,7 @@ document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseClos
       if (cellDate.getMonth() !== month) cell.classList.add('outside');
       if (cellDate.toDateString() === today.toDateString()) cell.classList.add('today');
 
+      
       const num = document.createElement('div');
       num.className = 'date-num';
       num.textContent = d;
@@ -150,9 +152,21 @@ document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseClos
       }
 
       cell.appendChild(list);
-      daysGrid.appendChild(cell);
+      daysGrid.appendChild(cell); 
+
+      cell.addEventListener('click', (e) => {  // if the cell is clicked the information the user can change the information 
+        e.preventDefault(); 
+        calendarContainer.style.display = "block";
+        addModal.classList.add("show");         
+
+
+      })
     }
   }
+
+  // 
+
+  
 // Prevent full-page submit/reload for the separate input modals
 const eventFormEl = document.getElementById('eventForm');
 const taskFormEl  = document.getElementById('taskForm');
