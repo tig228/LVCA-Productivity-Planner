@@ -1,8 +1,4 @@
-// ======================
-// MILESTONE 5–7 + AI/VOICE + G-CAL INTEGRATION
-// ======================
-
-// ========= CORE BUTTONS / MODALS =========
+// Core Buttons and modals 
 const startButton = document.getElementById("start");
 const nextButton = document.getElementById("next");
 const addCourseButton = document.getElementById("courses");
@@ -24,7 +20,7 @@ const taskModal = document.getElementById("task");
 const courseModal = document.getElementById("course");
 const calendarContainer = document.getElementById("calendarContainer");
 
-// ========= NAV FLOW =========
+// navigation
 startButton.addEventListener("click", (e) => {
   e.preventDefault();
   startModal.style.display = "none";
@@ -55,7 +51,7 @@ noButton.addEventListener("click", (e) => {
   calendarContainer.style.display = "block";
 });
 
-// ========= SHOW EVENT / TASK / COURSE MODALS =========
+// show event/task/course modals 
 addCourseButton.addEventListener("click", (e) => {
   e.preventDefault();
   addModal.style.display = "none";
@@ -74,7 +70,7 @@ taskButton.addEventListener("click", (e) => {
   taskModal.classList.add("show");
 });
 
-// ========= SIMPLE CLOSES =========
+// this function will close and of the modals 
 document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseCloseBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".modal").forEach(modal => modal.classList.remove("show"));
@@ -95,7 +91,7 @@ function addToCalendarStorage(dateStr, title, time, note) {
 }
 
 // ========= FORM HANDLERS =========
-document.getElementById("eventForm")?.addEventListener("submit", (e) => {
+document.getElementById("eventForm")?.addEventListener("submit", (e) => { //gets the event form 
   e.preventDefault();
   const title = document.getElementById("eventTitle").value.trim();
   const date = document.getElementById("eventDate").value;
@@ -107,7 +103,7 @@ document.getElementById("eventForm")?.addEventListener("submit", (e) => {
   calendarContainer.style.display = "block";
 });
 
-document.getElementById("taskForm")?.addEventListener("submit", (e) => {
+document.getElementById("taskForm")?.addEventListener("submit", (e) => { // gets the task form 
   e.preventDefault();
   const title = document.getElementById("taskTitle").value.trim();
   const date = document.getElementById("taskDate").value;
@@ -119,7 +115,7 @@ document.getElementById("taskForm")?.addEventListener("submit", (e) => {
   calendarContainer.style.display = "block";
 });
 
-document.getElementById("courseForm")?.addEventListener("submit", (e) => {
+document.getElementById("courseForm")?.addEventListener("submit", (e) => { //gets the course form
   e.preventDefault();
   const title = document.getElementById("courseTitle").value.trim();
   const date = document.getElementById("courseDate").value;
@@ -130,7 +126,7 @@ document.getElementById("courseForm")?.addEventListener("submit", (e) => {
   calendarContainer.style.display = "block";
 });
 
-calendarButton?.addEventListener("click", (e) => {
+calendarButton?.addEventListener("click", (e) => { // will display teh calendar without going through the modals 
   e.preventDefault();
   startModal.style.display = "none";
   calendarContainer.style.display = "block";
@@ -252,8 +248,8 @@ microphoneButton?.addEventListener("click", async () => {
   }
 });
 
-// ========= CALENDAR RENDERING =========
-(function () {
+
+(function () { // this creatses the calender 
   const daysGrid = document.getElementById("daysGrid");
   const monthLabel = document.getElementById("monthLabel");
   const rangeLabel = document.getElementById("rangeLabel");
@@ -294,6 +290,9 @@ microphoneButton?.addEventListener("click", async () => {
       const y = cellDate.getFullYear(), m = cellDate.getMonth() + 1, d = cellDate.getDate();
       const key = dateKey(y, m, d);
 
+      // store exact date on the cell so clicks can identify the proper date (fixes cross-month edit bug)
+      cell.dataset.date = key;
+
       if (cellDate.getMonth() !== month) cell.classList.add("outside");
       if (cellDate.toDateString() === today.toDateString()) cell.classList.add("today");
 
@@ -305,15 +304,18 @@ microphoneButton?.addEventListener("click", async () => {
       const list = document.createElement("div");
       list.className = "events";
       const dayEvents = events[key] || [];
-      dayEvents.slice(0, 3).forEach(ev => {
+      dayEvents.slice(0, 3).forEach((ev, idx) => {
         const evEl = document.createElement("div");
         evEl.className = "event";
+        // attach index mapping to the rendered element so clicks map to the correct event
+        evEl.dataset.index = idx;
         evEl.textContent = (ev.time ? ev.time + " — " : "") + ev.title;
         list.appendChild(evEl);
       });
       if (dayEvents.length > 3) {
         const more = document.createElement("div");
         more.className = "event";
+        // don't set data-index for the more element; clicking it will be ignored for edit/view
         more.textContent = `+${dayEvents.length - 3} more`;
         list.appendChild(more);
       }
@@ -321,7 +323,8 @@ microphoneButton?.addEventListener("click", async () => {
       cell.appendChild(list);
       daysGrid.appendChild(cell);
 
-     
+      // Click to open Add/Edit modal
+      
     }
   }
 
@@ -374,15 +377,19 @@ function saveAllEvents(evObj) {
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('event')) {
     const dayCell = e.target.closest('.day');
-    const dayNum = dayCell.querySelector('.date-num').textContent;
-    const [monthName, yearStr] = document.getElementById('monthLabel').textContent.split(' ');
-    const monthIndex = new Date(`${monthName} 1, ${yearStr}`).getMonth() + 1;
-    const dateKey = `${yearStr}-${String(monthIndex).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
-    
+    if (!dayCell) return;
+
+    // Use the stored cell date rather than deriving it from the header month (fixes cross-month selection)
+    const dateKey = dayCell.dataset.date;
+    if (!dateKey) return;
+
     const events = loadAllEvents();
     const dayEvents = events[dateKey] || [];
-    const eventIndex = Array.from(dayCell.querySelectorAll('.event')).indexOf(e.target);
 
+    // Use the data-index attached to rendered event elements to find the correct event
+    const idxAttr = e.target.dataset.index;
+    const eventIndex = (typeof idxAttr !== 'undefined') ? parseInt(idxAttr, 10) : -1;
+    if (eventIndex === -1) return; // ignore clicks on "+n more" or other non-event elements
     if (eventIndex > -1 && eventIndex < dayEvents.length) {
       selectedEvent = { dateKey, index: eventIndex, data: dayEvents[eventIndex] };
       const ev = selectedEvent.data;
