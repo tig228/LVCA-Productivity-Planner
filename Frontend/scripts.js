@@ -7,7 +7,7 @@ const taskButton = document.getElementById("tasks");
 const finishedButton = document.getElementById("submit");
 const yesButton = document.getElementById("yes");
 const noButton = document.getElementById("no");
-const calendarButton = document.getElementById("seeCal");
+const calendarButton = document.getElementById("seeCal"); //comment
 
 
 const startModal = document.getElementById("welcome");
@@ -64,6 +64,8 @@ taskButton.addEventListener("click", (e) => {
   addModal.style.display = "none";
   taskModal.classList.add("show");
 });
+
+
 
 // this function will close and of the modals 
 document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseCloseBtn").forEach(btn => {
