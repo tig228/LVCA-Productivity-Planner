@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Planner</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<!-- Needs to add: 
+ Edit Button on Calendar header 
+ Delete Button on Calendar header 
+ Add Button on Calendar header 
+ If an event is clicked details about it will be showed -->
+<body>
+  <button id = seeCal>See Calendar</button>
+  <!-- ====== Onboarding Modals ====== -->
+  <div class="modal" id="welcome">
+    <h1>Welcome❤️</h1>
+    <button id="start">Let's Get Started!</button>
+  </div>
+
+ 
+  <div class="modal" id="adding">
+    <div class="paragraph">
+      <p>ok! we have all your courses, is there anything else you would like to add?</p>
+    </div>
+    <button id="microphone">🎙️</button>
+    <button id="courses">Add Course +</button>
+    <button id="events">Add Event +</button>
+    <button id="tasks">Add Task +</button>
+    <button id="submit">Finished!</button>
+  </div>
+
+  <div class="modal" id="suggestions">
+    <div class="paragraph">Would you like suggestions of when you should do your tasks?</div>
+    <button id="yes">Yes Please!</button>
+    <button id="no">No Thanks</button>
+  </div>
+
+  <div class="modal" id="advice">
+    <h3>Advice</h3>
+    <p>Here, users will choose what tasks or classes are hardest for them.</p>
+
+    <!-- New: Ask whether a course/task is usually hard, how it makes the user feel afterwards, and optionally a due date -->
+    <form id="adviceForm" style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+      <label for="adviceName">Course or Task name:</label>
+      <input type="text" id="adviceName" placeholder="e.g. Calculus I or Homework A" required />
+
+      <div>
+        <div>Is this usually a hard course/task?</div>
+        <label style="margin-right:12px;">
+          <input type="radio" name="adviceHard" value="yes" /> Yes
+        </label>
+        <label>
+          <input type="radio" name="adviceHard" value="no" checked /> No
+        </label>
+      </div>
+
+      <div>
+        <div>How does this course make you feel afterwards?</div>
+        <label style="margin-right:12px;">
+          <input type="radio" name="adviceFeeling" value="tired" checked /> Tired
+        </label>
+        <label>
+          <input type="radio" name="adviceFeeling" value="energized" /> Energized
+        </label>
+      </div>
+
+      <div>
+        <label for="adviceDueDate">Due date (optional):</label>
+        <input type="date" id="adviceDueDate" />
+        <small style="color: #444;">If you provide a due date we'll auto-schedule a prep task 2 days before.</small>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn secondary" id="adviceSkipBtn">Skip</button>
+        <button type="submit" class="btn" id="adviceSaveBtn">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ====== Event / Task / Course Modals ====== -->
+  <div class="modal" id="event">
+    <h3>Event</h3>
+    <form id="eventForm">
+      <input type="text" id="eventTitle" placeholder="Event title (required)" required />
+      <label for="eventDate">Date:</label>
+      <input type="date" id="eventDate" required />
+      <input type="time" id="eventTime" />
+      <textarea id="eventNote" rows="3" placeholder="Details (optional)"></textarea>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="deleteAllBtn">Delete all</button>
+        <button type="button" class="btn secondary" id="closeBtn">Close</button>
+        <button type="submit" class="btn secondary">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal" id="task">
+    <h3>Task</h3>
+    <form id="taskForm">
+      <input type="text" id="taskTitle" placeholder="Task title (required)" required />
+      <label for="taskDate">Date:</label>
+      <input type="date" id="taskDate" required />
+      <input type="time" id="taskTime" />
+      <textarea id="taskNote" rows="3" placeholder="Details (optional)"></textarea>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="taskCloseBtn">Close</button>
+        <button type="submit" class="btn secondary">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal" id="course">
+    <h3>Course</h3>
+    <form id="courseForm">
+      <input type="text" id="courseTitle" placeholder="Course name (required)" required />
+      <label for="courseDate">Date:</label>
+      <input type="date" id="courseDate" required />
+      <textarea id="courseNote" rows="3" placeholder="Details (optional)"></textarea>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="courseCloseBtn">Close</button>
+        <button type="submit" class="btn secondary">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ====== Calendar Section (hidden until finished) ====== -->
+  <main class="calendar" id="calendarContainer" style="display: none;" role="application" aria-label="Interactive calendar">
+    <div class="cal-header">
+      <div class="month-title">
+        <h2 id="monthLabel">Month Year</h2>
+        <small id="rangeLabel">Range</small>
+      </div>
+      <div class="nav" role="navigation" aria-label="Calendar controls">
+        
+        <button class="btn" id="prevBtn">◀</button>
+        <button class="btn" id="nextBtn">▶</button>
+        <button class="btn today-btn" id="todayBtn">Today</button>
+      </div>
+    </div>
+
+    <!-- ===== Event Detail Modal ===== -->
+  <div class="modal" id="eventDetailModal">
+  <h3>Event Details</h3>
+  <div id="eventDetailContent"></div>
+  <div class="actions">
+    <button id="editEventBtn" class="btn secondary">Edit</button>
+    <button id="deleteEventBtn" class="btn secondary">Delete</button>
+    <button id="closeEventDetail" class="btn secondary">Close</button>
+  </div>
+</div>
+    <div class="weekdays" aria-hidden="true">
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+
+    <section class="days" id="daysGrid" aria-live="polite"></section>
+
+
+    <!-- A new modal is going to be added where if the event is clicked -->
+  </main>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

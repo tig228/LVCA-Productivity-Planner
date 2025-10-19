@@ -1,0 +1,187 @@
+:root {
+  --bg-color: rgb(207,181,128);
+  --accent-color: rgb(202,124,76);
+  --text-color: rgb(87,128,136);
+  --main-color: rgb(116,148,140);
+  --accent2-color: rgb(134,78,62);
+}
+
+/* ===== GENERAL ===== */
+body {
+  background-color: var(--main-color);
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', Arial, sans-serif;
+  color: var(--text-color);
+}
+
+button {
+  font-family: inherit;
+  background-color: var(--accent2-color);
+  color: white;
+  border-radius: 20px;
+  width: 150px;
+  height: 50px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: rgb(206,142,124);
+  color: black;
+}
+
+/* ===== MODALS ===== */
+.modal {
+  transform: translate(100%, 50%);
+  width: 500px;
+  height: 300px;
+  background-color: var(--bg-color);
+  padding: 20px;
+  border: 1px solid;
+  border-radius: 20px;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+#welcome { display: flex; position: absolute; }
+ #adding, #suggestions,  #event, #task, #course, #eventDetailModal {
+  position: absolute;
+  gap: 10px;
+}
+#advice{
+  transform: translate(50%, 10%);
+  width: 700px;
+  height: 500px; 
+  position: absolute;
+  gap: 10px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+/* === PERFECT ALIGNMENT FIX === */
+.calendar {
+  width: 100%;
+  max-width: 1500px;
+  margin: 40px auto;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+  border-radius: 12px;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.4);
+   /* ensures header & grid edges line up exactly */
+}
+
+/* Header and nav now flush with calendar edges */
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Weekday bar and grid use same inner padding */
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 10px 24px 4px 24px; /* matches header padding */
+  box-sizing: border-box;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  padding: 0 24px 24px 24px; /* same horizontal padding */
+  box-sizing: border-box;
+}
+
+.month-title h2 { margin: 0; font-size: 1.25rem; }
+.month-title small { color: var(--accent-color); }
+
+.nav {
+  display: flex;
+  gap: 8px;
+}
+
+.today-btn {
+  background: var(--accent2-color);
+  color: white;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--accent-color);
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day {
+  min-height: 80px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.day:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+}
+
+.day.today {
+  outline: 2px solid var(--accent2-color);
+  background: rgba(255,255,255,0.5);
+}
+
+.event {
+  
+  background: rgba(255,255,255,0.4);
+  border-radius: 8px;
+  padding: 4px;
+  font-size: 0.8rem;
+}
+.modal h3 { margin: 0 0 8px 0; }
+.modal form { display: flex; flex-direction: column; gap: 8px; }
+
+input[type="text"], textarea, input[type="time"], input[type="date"] {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 10px;
+  color: var(--text);
+  border-radius: 8px;
+}
+
+.actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.04); }
+
+@media (max-width:640px) {
+  .day { min-height: 72px; }
+  .month-title h2 { font-size: 1rem; }
+}
+
