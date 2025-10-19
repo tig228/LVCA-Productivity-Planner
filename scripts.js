@@ -1,10 +1,8 @@
-//Milestone #5 comment through the code and understand each line
-// Miilestone #6 Fix the CSS aspects XX
-// Milestone #7 If they click on a calendar a info modual shows up of the events and tasks that they need to do 
+// ======================
+// MILESTONE 5–7 + AI/VOICE + G-CAL INTEGRATION
+// ======================
 
-
-
-
+// ========= CORE BUTTONS / MODALS =========
 const startButton = document.getElementById("start");
 const nextButton = document.getElementById("next");
 const addCourseButton = document.getElementById("courses");
@@ -13,10 +11,8 @@ const taskButton = document.getElementById("tasks");
 const finishedButton = document.getElementById("submit");
 const yesButton = document.getElementById("yes");
 const noButton = document.getElementById("no");
-const calendarButton = document.getElementById("seeCal"); 
-const editCalHeader = document.getElementById("editCal-header"); 
-const deleteCalHeader = document.getElementById("deleteCalHeader");
-const addCalHeader = document.getElementById("addCal-header"); 
+const calendarButton = document.getElementById("seeCal");
+
 
 const startModal = document.getElementById("welcome");
 const addModal = document.getElementById("adding");
@@ -28,231 +24,429 @@ const taskModal = document.getElementById("task");
 const courseModal = document.getElementById("course");
 const calendarContainer = document.getElementById("calendarContainer");
 
-startButton.addEventListener("click", (e) => { // this takes you to the login page 
+// ========= NAV FLOW =========
+startButton.addEventListener("click", (e) => {
   e.preventDefault();
   startModal.style.display = "none";
   loginModal.classList.add("show");
 });
 
-nextButton.addEventListener("click", (e) => {  // this takes you to the add events page
-  e.preventDefault();  
+nextButton.addEventListener("click", (e) => {
+  e.preventDefault();
   loginModal.style.display = "none";
   addModal.classList.add("show");
 });
 
-finishedButton.addEventListener("click", (e) => {  // once you click this button it will take you to a prompt where you can ask for suggestions 
+finishedButton.addEventListener("click", (e) => {
   e.preventDefault();
   addModal.style.display = "none";
   suggestionModal.classList.add("show");
 });
 
-yesButton.addEventListener("click", (e) => {  // if yes there will be many questions as to where you events should go 
+yesButton.addEventListener("click", (e) => {
   e.preventDefault();
   suggestionModal.style.display = "none";
   adviceModal.classList.add("show");
 });
 
-noButton.addEventListener("click", (e) => {  // no will take you immediately to the finished calenday 
+noButton.addEventListener("click", (e) => {
   e.preventDefault();
   suggestionModal.style.display = "none";
   calendarContainer.style.display = "block";
 });
 
-// ===== SHOW EVENT / TASK / COURSE MODALS =====
-addCourseButton.addEventListener("click", (e) => {   // will take you to the addCourses
+// ========= SHOW EVENT / TASK / COURSE MODALS =========
+addCourseButton.addEventListener("click", (e) => {
   e.preventDefault();
   addModal.style.display = "none";
   courseModal.classList.add("show");
 });
 
-eventButton.addEventListener("click", (e) => {   // will take you to the addEvents 
+eventButton.addEventListener("click", (e) => {
   e.preventDefault();
   addModal.style.display = "none";
   eventModal.classList.add("show");
 });
 
-taskButton.addEventListener("click", (e) => {  // will take you to the add Tasks 
+taskButton.addEventListener("click", (e) => {
   e.preventDefault();
   addModal.style.display = "none";
   taskModal.classList.add("show");
 });
 
-
-
-// ===== SIMPLE CLOSES =====
-document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseCloseBtn").forEach(btn => {  // this hides the calendar 
+// ========= SIMPLE CLOSES =========
+document.querySelectorAll(".btn.secondary, #closeBtn, #taskCloseBtn, #courseCloseBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".modal").forEach(modal => modal.classList.remove("show"));
     calendarContainer.style.display = "block";
   });
 });
 
-// ====== CALENDAR LOGIC (unchanged, wrapped to avoid interference) ======
+// ========= LOCAL CALENDAR STORAGE =========
+function addToCalendarStorage(dateStr, title, time, note) {
+  const STORAGE_KEY = "calendar_events_v1";
+  const events = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  const key = dateStr;
+  events[key] = events[key] || [];
+  events[key].push({ title, time, note });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+
+  if (typeof window.renderCalendar === "function") window.renderCalendar(); // refresh
+}
+
+// ========= FORM HANDLERS =========
+document.getElementById("eventForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const title = document.getElementById("eventTitle").value.trim();
+  const date = document.getElementById("eventDate").value;
+  const time = document.getElementById("eventTime").value;
+  const note = document.getElementById("eventNote").value.trim();
+  if (!title || !date) return;
+  addToCalendarStorage(date, title, time, note);
+  document.querySelectorAll(".modal").forEach(m => m.classList.remove("show"));
+  calendarContainer.style.display = "block";
+});
+
+document.getElementById("taskForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const title = document.getElementById("taskTitle").value.trim();
+  const date = document.getElementById("taskDate").value;
+  const time = document.getElementById("taskTime").value;
+  const note = document.getElementById("taskNote").value.trim();
+  if (!title || !date) return;
+  addToCalendarStorage(date, title, time, note);
+  document.querySelectorAll(".modal").forEach(m => m.classList.remove("show"));
+  calendarContainer.style.display = "block";
+});
+
+document.getElementById("courseForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const title = document.getElementById("courseTitle").value.trim();
+  const date = document.getElementById("courseDate").value;
+  const note = document.getElementById("courseNote").value.trim();
+  if (!title || !date) return;
+  addToCalendarStorage(date, title, "", note);
+  document.querySelectorAll(".modal").forEach(m => m.classList.remove("show"));
+  calendarContainer.style.display = "block";
+});
+
+calendarButton?.addEventListener("click", (e) => {
+  e.preventDefault();
+  startModal.style.display = "none";
+  calendarContainer.style.display = "block";
+  if (typeof window.renderCalendar === "function") window.renderCalendar();
+});
+
+// ========= AI VOICE + GOOGLE CAL =========
+const microphoneButton = document.getElementById("microphone");
+const transcriptDisplay = document.getElementById("transcript");
+const API_URL = "https://23elpyn70c.execute-api.us-east-1.amazonaws.com/prod/process";
+
+const toGCalUTC = (iso) => {
+  const d = new Date(iso);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;
+};
+
+const openGCal = (ev) => {
+  const title = encodeURIComponent(ev.title || "");
+  const details = encodeURIComponent(ev.description || "");
+  const location = encodeURIComponent(ev.location || "");
+  const dates = `${toGCalUTC(ev.start_time)}/${toGCalUTC(ev.end_time)}`;
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${dates}`;
+  const win = window.open(url, "_blank");
+  if (!win || win.closed || typeof win.closed === "undefined") {
+    if (transcriptDisplay) {
+      transcriptDisplay.innerHTML = `Popup blocked. <a href="${url}" target="_blank">Click here to open your Google Calendar event.</a>`;
+    } else {
+      alert("Popup blocked by the browser. Please allow popups and try again.");
+    }
+  }
+};
+
+const extractKeyword = (text) => {
+  if (!text) return "Untitled Event";
+  const words = text.split(/\s+/).filter(w => w.length > 3);
+  return words.length ? words[0].replace(/[^a-zA-Z0-9]/g, "") : "Untitled Event";
+};
+
+// Speech recognition
+const speechToText = () => new Promise((resolve) => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    transcriptDisplay.textContent = "Speech recognition not supported.";
+    resolve(null);
+    return;
+  }
+  const rec = new SR();
+  rec.lang = "en-US";
+  rec.interimResults = true;
+
+  let finalText = "";
+  let stopped = false;
+  transcriptDisplay.textContent = "Listening (10s)...";
+
+  rec.onresult = (e) => {
+    const result = Array.from(e.results).map(r => r[0].transcript).join(" ");
+    transcriptDisplay.textContent = result;
+    if (e.results[e.results.length - 1].isFinal) finalText = result;
+  };
+
+  rec.onend = () => {
+    if (!stopped) {
+      stopped = true;
+      resolve(finalText.trim() || null);
+    }
+  };
+
+  rec.start();
+  setTimeout(() => {
+    if (!stopped) {
+      stopped = true;
+      rec.stop();
+      transcriptDisplay.textContent += " (Stopped)";
+    }
+  }, 10000);
+});
+
+const promptForText = async () => {
+  const text = prompt("Say or type something about your day:");
+  if (!text) return null;
+  transcriptDisplay.textContent = "You typed: " + text;
+  return text.trim();
+};
+
+const parseWithAI = async (text) => {
+  transcriptDisplay.textContent = "Processing with AI...";
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Request failed");
+  return data.event;
+};
+
+microphoneButton?.addEventListener("click", async () => {
+  try {
+    let text = await speechToText();
+    if (!text) text = await promptForText();
+    if (!text) return;
+
+    const ev = await parseWithAI(text);
+    if (!ev.title || !ev.title.trim()) ev.title = extractKeyword(text);
+
+    const localDate = ev.start_time.split("T")[0];
+    const time = ev.start_time.split("T")[1]?.slice(0, 5);
+    addToCalendarStorage(localDate, ev.title, time, ev.description);
+
+    transcriptDisplay.textContent = `Event saved: ${ev.title} (${ev.start_time})`;
+
+    if (confirm(`Added to your planner.\nTitle: ${ev.title}\nStart: ${ev.start_time}\nEnd: ${ev.end_time}\nLocation: ${ev.location || ""}\n\nOpen in Google Calendar?`)) {
+      openGCal(ev);
+    }
+  } catch (err) {
+    transcriptDisplay.textContent = "Error: " + err.message;
+    alert("Error: " + err.message);
+  }
+});
+
+// ========= CALENDAR RENDERING =========
 (function () {
-  const daysGrid = document.getElementById('daysGrid');  // this creates the buttons labels and grids for the calendar 
-  const monthLabel = document.getElementById('monthLabel');
-  const rangeLabel = document.getElementById('rangeLabel');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const todayBtn = document.getElementById('todayBtn');
+  const daysGrid = document.getElementById("daysGrid");
+  const monthLabel = document.getElementById("monthLabel");
+  const rangeLabel = document.getElementById("rangeLabel");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const todayBtn = document.getElementById("todayBtn");
 
-  let viewDate = new Date();  // this is 
+  let viewDate = new Date();
   const today = new Date();
-  const STORAGE_KEY = 'calendar_events_v1';
+  const STORAGE_KEY = "calendar_events_v1";
 
-  const loadEvents = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');  // this gets storage and loads the events 
-  const saveEvents = (obj) => localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-  const formatMonthYear = (d) => d.toLocaleString(undefined, { month: 'long', year: 'numeric' });
-  const dateKey = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  const loadEvents = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  const formatMonthYear = (d) => d.toLocaleString(undefined, { month: "long", year: "numeric" });
+  const dateKey = (y, m, d) => `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 
   function render() {
-    daysGrid.innerHTML = '';
+    daysGrid.innerHTML = "";
     const year = viewDate.getFullYear();
     const month = viewDate.getMonth();
     const firstOfMonth = new Date(year, month, 1);
     const startWeekDay = firstOfMonth.getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+
     monthLabel.textContent = formatMonthYear(viewDate);
     const startVisible = new Date(year, month, 1 - startWeekDay);
-    const endVisible = new Date(year, month, (42 - startWeekDay));
+    const endVisible = new Date(year, month, 42 - startWeekDay);
     rangeLabel.textContent = `${startVisible.toLocaleDateString()} — ${endVisible.toLocaleDateString()}`;
+
     const events = loadEvents();
 
     for (let i = 0; i < 42; i++) {
-      const cell = document.createElement('button');
-      cell.type = 'button';
-      cell.className = 'day';
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "day";
+
       const dayOffset = i - startWeekDay + 1;
       const cellDate = new Date(year, month, dayOffset);
       const y = cellDate.getFullYear(), m = cellDate.getMonth() + 1, d = cellDate.getDate();
       const key = dateKey(y, m, d);
-      if (cellDate.getMonth() !== month) cell.classList.add('outside');
-      if (cellDate.toDateString() === today.toDateString()) cell.classList.add('today');
 
-      
-      const num = document.createElement('div');
-      num.className = 'date-num';
+      if (cellDate.getMonth() !== month) cell.classList.add("outside");
+      if (cellDate.toDateString() === today.toDateString()) cell.classList.add("today");
+
+      const num = document.createElement("div");
+      num.className = "date-num";
       num.textContent = d;
       cell.appendChild(num);
 
-      const list = document.createElement('div');
-      list.className = 'events';
+      const list = document.createElement("div");
+      list.className = "events";
       const dayEvents = events[key] || [];
       dayEvents.slice(0, 3).forEach(ev => {
-        const evEl = document.createElement('div');
-        evEl.className = 'event';
-        evEl.textContent = (ev.time ? ev.time + ' — ' : '') + ev.title;
+        const evEl = document.createElement("div");
+        evEl.className = "event";
+        evEl.textContent = (ev.time ? ev.time + " — " : "") + ev.title;
         list.appendChild(evEl);
       });
       if (dayEvents.length > 3) {
-        const more = document.createElement('div');
-        more.className = 'event';
+        const more = document.createElement("div");
+        more.className = "event";
         more.textContent = `+${dayEvents.length - 3} more`;
         list.appendChild(more);
       }
 
       cell.appendChild(list);
-      daysGrid.appendChild(cell); 
+      daysGrid.appendChild(cell);
 
-      cell.addEventListener('click', (e) => {  // if the cell is clicked the information the user can change the information 
-        e.preventDefault(); 
-        calendarContainer.style.display = "block";
-        addModal.classList.add("show");         
-
-
-      })
+     
     }
   }
 
-  // 
+  // Expose globally
+  window.renderCalendar = render;
 
-  
-// Prevent full-page submit/reload for the separate input modals
-const eventFormEl = document.getElementById('eventForm');
-const taskFormEl  = document.getElementById('taskForm');
-const courseFormEl = document.getElementById('courseForm');
-
-[eventFormEl, taskFormEl, courseFormEl].forEach(formEl => {
-  if (!formEl) return;
-  formEl.addEventListener('submit', (e) => {
-    e.preventDefault();                    // STOP page reload
-    document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); // close modals
-    calendarContainer.style.display = 'block'; // reveal calendar
-    // NOTE: we do NOT change your data logic — these forms remain separate and you can
-    // add your own save logic here if/when you want. This only prevents the reload.
-  });
-});
-  prevBtn.addEventListener('click', (e) => {
+  prevBtn.addEventListener("click", () => {
     viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);
     render();
   });
-  nextBtn.addEventListener('click', (e) => {
+  nextBtn.addEventListener("click", () => {
     viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
     render();
   });
-  todayBtn.addEventListener('click', (e) => {
+  todayBtn.addEventListener("click", () => {
     viewDate = new Date();
     render();
   });
 
   render();
-
 })();
 
-// ===== CONNECT EVENT / TASK / COURSE FORMS TO CALENDAR =====
-function addToCalendarStorage(dateStr, title, time, note) {
-  const STORAGE_KEY = 'calendar_events_v1';
-  const events = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  const key = dateStr; // already in YYYY-MM-DD format from <input type="date">
-  events[key] = events[key] || [];
-  events[key].push({ title, time, note });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+// This code below is for the edit modal 
 
-  // re-render calendar immediately
-  if (typeof window.renderCalendar === 'function') {
-    window.renderCalendar();
-  }
+
+// ===== EVENT VIEW / EDIT / DELETE FUNCTIONALITY =====
+const eventDetailModal = document.getElementById('eventDetailModal');
+const eventDetailContent = document.getElementById('eventDetailContent');
+const closeEventDetail = document.getElementById('closeEventDetail');
+const editEventBtn = document.getElementById('editEventBtn');
+const deleteEventBtn = document.getElementById('deleteEventBtn');
+const deleteCalHeader = document.getElementById('deleteCal-header');
+const editCalHeader = document.getElementById('editCal-header');
+const addCalHeader = document.getElementById('addCal-header');
+
+let selectedEvent = null; // store current event info (date, index, data)
+
+// helper: get all events
+function loadAllEvents() {
+  return JSON.parse(localStorage.getItem('calendar_events_v1') || '{}');
 }
 
-// Hook up each form to save into calendar
-document.getElementById('eventForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const title = document.getElementById('eventTitle').value.trim();
-  const date = document.getElementById('eventDate').value;
-  const time = document.getElementById('eventTime').value;
-  const note = document.getElementById('eventNote').value.trim();
-  if (!title || !date) return;
-  addToCalendarStorage(date, title, time, note);
-  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
-  calendarContainer.style.display = 'block';
+// helper: save all events
+function saveAllEvents(evObj) {
+  localStorage.setItem('calendar_events_v1', JSON.stringify(evObj));
+  if (window.renderCalendar) window.renderCalendar();
+}
+
+/* === Handle clicking on an individual event in the calendar === */
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('event')) {
+    const dayCell = e.target.closest('.day');
+    const dayNum = dayCell.querySelector('.date-num').textContent;
+    const [monthName, yearStr] = document.getElementById('monthLabel').textContent.split(' ');
+    const monthIndex = new Date(`${monthName} 1, ${yearStr}`).getMonth() + 1;
+    const dateKey = `${yearStr}-${String(monthIndex).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+    
+    const events = loadAllEvents();
+    const dayEvents = events[dateKey] || [];
+    const eventIndex = Array.from(dayCell.querySelectorAll('.event')).indexOf(e.target);
+
+    if (eventIndex > -1 && eventIndex < dayEvents.length) {
+      selectedEvent = { dateKey, index: eventIndex, data: dayEvents[eventIndex] };
+      const ev = selectedEvent.data;
+      // identify event type
+      let eventType = 'Event';
+      if (ev.note?.toLowerCase().includes('task')) eventType = 'Task';
+      if (ev.note?.toLowerCase().includes('course')) eventType = 'Course';
+      
+      eventDetailContent.innerHTML = `
+        <p><strong>Type:</strong> ${eventType}</p>
+        <p><strong>Title:</strong> ${ev.title}</p>
+        <p><strong>Date:</strong> ${dateKey}</p>
+        ${ev.time ? `<p><strong>Time:</strong> ${ev.time}</p>` : ''}
+        ${ev.note ? `<p><strong>Details:</strong> ${ev.note}</p>` : ''}
+      `;
+      eventDetailModal.classList.add('show');
+    }
+  }
 });
 
-document.getElementById('taskForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const title = document.getElementById('taskTitle').value.trim();
-  const date = document.getElementById('taskDate').value;
-  const time = document.getElementById('taskTime').value;
-  const note = document.getElementById('taskNote').value.trim();
-  if (!title || !date) return;
-  addToCalendarStorage(date, title, time, note);
-  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
-  calendarContainer.style.display = 'block';
+/* === Close Event Detail Modal === */
+closeEventDetail.addEventListener('click', () => {
+  eventDetailModal.classList.remove('show');
+  selectedEvent = null;
 });
 
-document.getElementById('courseForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const title = document.getElementById('courseTitle').value.trim();
-  const date = document.getElementById('courseDate').value;
-  const note = document.getElementById('courseNote').value.trim();
-  if (!title || !date) return;
-  addToCalendarStorage(date, title, '', note);
-  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
-  calendarContainer.style.display = 'block';
+/* === Delete Selected Event === */
+deleteEventBtn.addEventListener('click', () => {
+  if (!selectedEvent) return;
+  const events = loadAllEvents();
+  events[selectedEvent.dateKey].splice(selectedEvent.index, 1);
+  if (events[selectedEvent.dateKey].length === 0) delete events[selectedEvent.dateKey];
+  saveAllEvents(events);
+  eventDetailModal.classList.remove('show');
+  selectedEvent = null;
 });
 
-calendarButton.addEventListener("click", (e) => {
-  e.preventDefault();
-  startModal.style.display = "none";
-  calendarContainer.style.display = "block";
-  window.renderCalendar(); // Call the global reference
+/* === Edit Selected Event === */
+editEventBtn.addEventListener('click', () => {
+  if (!selectedEvent) return;
+  const ev = selectedEvent.data;
+  // pre-fill event modal
+  document.getElementById('eventTitle').value = ev.title;
+  document.getElementById('eventDate').value = selectedEvent.dateKey;
+  document.getElementById('eventTime').value = ev.time || '';
+  document.getElementById('eventNote').value = ev.note || '';
+  eventDetailModal.classList.remove('show');
+  eventModal.classList.add('show');
+});
+
+/* === Header Delete Button: delete ALL events === */
+deleteCalHeader.addEventListener('click', () => {
+  if (confirm('Are you sure you want to delete all events?')) {
+    localStorage.removeItem('calendar_events_v1');
+    if (window.renderCalendar) window.renderCalendar();
+  }
+});
+
+/* === Header Edit Button: toggle edit mode === */
+editCalHeader.addEventListener('click', () => {
+  alert('Click on any event to view or edit its details!');
+});
+
+/* === Header Add Button: open add modal === */
+addCalHeader.addEventListener('click', () => {
+  addModal.classList.add('show');
 });

@@ -109,11 +109,24 @@
       </div>
     </div>
 
+    <!-- ===== Event Detail Modal ===== -->
+  <div class="modal" id="eventDetailModal">
+  <h3>Event Details</h3>
+  <div id="eventDetailContent"></div>
+  <div class="actions">
+    <button id="editEventBtn" class="btn secondary">Edit</button>
+    <button id="deleteEventBtn" class="btn secondary">Delete</button>
+    <button id="closeEventDetail" class="btn secondary">Close</button>
+  </div>
+</div>
     <div class="weekdays" aria-hidden="true">
       <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
     </div>
 
     <section class="days" id="daysGrid" aria-live="polite"></section>
+
+
+    <!-- A new modal is going to be added where if the event is clicked -->
   </main>
 
   <script src="scripts.js"></script>
